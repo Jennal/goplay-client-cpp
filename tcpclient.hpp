@@ -5,12 +5,13 @@
 
 #include "common.h"
 #include "header.hpp"
+#include "bytes.hpp"
 
 class TcpClient {
 private:
     int m_socketID;
     std::string m_host;
-    int m_port;
+    std::string m_port;
 
 public:
     TcpClient();
@@ -18,11 +19,11 @@ public:
 
     bool IsConnected();
 
-    Status Connect(const std::string& host, int port);
+    Status Connect(const std::string& host, const std::string& port);
     Status Disconnect();
 
-    Status Recv(Header& header, Bytes bytes);
-    Status Send(Header& header, Bytes bytes);
+    Status Recv(const Header& header, const Bytes& bytes);
+    Status Send(const Header& header, const Bytes& bytes);
 };
 
 #endif /* TCPCLIENT_HPP */

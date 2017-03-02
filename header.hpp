@@ -1,10 +1,13 @@
 #ifndef HEADER_HPP
 #define HEADER_HPP
 
-#include "common.hpp"
-#include "tcpclient.h"
+#include "common.h"
+#include "bytes.hpp"
 
 class Header {
+public:
+    static const size_t HeaderSize;
+
 public:
     PackageType Type;
     EncodingType Encoding;
@@ -14,6 +17,8 @@ public:
 public:
     Header(PackageType t, EncodingType e, PackageIDType id, PackageSizeType size);
     ~Header();
+
+    void GetBytes(Bytes& bytes);
 };
 
 #endif /* HEADER_HPP */

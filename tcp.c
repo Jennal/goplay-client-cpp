@@ -1,5 +1,5 @@
 #include "common.h"
-#include "tcpclient.h"
+#include "tcp.h"
 
 int tcp_client(const char *hostname, const char *port)
 {
@@ -43,6 +43,12 @@ int tcp_client(const char *hostname, const char *port)
 		/* couldn't connect anywhere */
 		return (int)STAT_ERR_CONNECT_FAILED;
 	}
+
+	struct timeval timeout;
+	timeout.tv_sec = SOCKET_TIMEOUT_SEC;
+	timeout.tv_usec = 0;
+	setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+	setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
 
 	return sockfd;
 }
