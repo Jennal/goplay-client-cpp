@@ -4,6 +4,9 @@
 #include "bytes.hpp"
 #include "header.hpp"
 
+#include <iostream>
+#include "test_common.hpp"
+
 TcpClient::TcpClient()
     : m_socketID(-1),
       m_host(""),
@@ -15,31 +18,56 @@ TcpClient::~TcpClient() {
 }
 
 bool TcpClient::IsConnected() {
-    return this->m_socketID >= 0;
+    return m_socketID >= 0;
 }
 
 Status TcpClient::Connect(const std::string& host, const std::string& port) {
-    if (this->IsConnected()) {
-        if (this->m_host == host && this->m_port == port) return STAT_OK;
-        else this->Disconnect();
+    if (IsConnected()) {
+        if (m_host == host && m_port == port) return STAT_OK;
+        else Disconnect();
     }
 
-    this->m_host = host;
-    this->m_port = port;
+    m_host = host;
+    m_port = port;
 
-    int status = tcp_client(this->m_host.c_str(), this->m_port.c_str());
+    int status = tcp_client(m_host.c_str(), m_port.c_str());
     if(status < 0) return (Status)status;
 
-    this->m_socketID = status;
+    //setup socket
+    m_socketID = status;
+
+    //setup thread
+    m_recvThread = std::thread([this](){
+        while(true) {
+            Header header;
+            Bytes body;
+            Status s = this->Recv(header, body);
+            //TODO:
+            if (s == STAT_OK) {
+                std::cout << "Recv: " << std::endl;
+                std::cout << "\t => "; header_print(header);
+                std::cout << "\t => "; bytes_print(body);
+                std::cout << "===============================" << std::endl;
+            } else if(s == STAT_ERR_RECV_AGAIN) {
+                continue;
+            } else {
+                std::cout << "Err: " << s << std::endl;
+            }
+        }
+    });
 
     return STAT_OK;
 }
 
 Status TcpClient::Disconnect() {
-    if ( ! this->IsConnected()) return STAT_OK;
+    if ( ! IsConnected()) return STAT_OK;
 
-    close(this->m_socketID);
-    this->m_socketID = -1;
+    //close thread
+    if(m_recvThread.joinable()) m_recvThread.detach();
+
+    //close socket
+    close(m_socketID);
+    m_socketID = -1;
 
     return STAT_OK;
 }
@@ -48,7 +76,7 @@ Status TcpClient::Recv(Header& header, Bytes& bytes) {
     unsigned char buf[Header::HeaderSize];
     memset(buf, 0, Header::HeaderSize);
     size_t n = recv(m_socketID, buf, Header::HeaderSize, 0);
-    if(n < 0) return (Status)errno;
+    if(n <= 0) return (Status)errno;
 
     Bytes b(buf, Header::HeaderSize);
     header.SetBytes(b);
@@ -56,22 +84,24 @@ Status TcpClient::Recv(Header& header, Bytes& bytes) {
     unsigned char content[header.ContentSize];
     memset(content, 0, header.ContentSize);
     n = recv(m_socketID, content, header.ContentSize, 0);
-    if(n < 0) return (Status)errno;
+    if(n <= 0) return (Status)errno;
 
     bytes.Write(content, n);
 
     return STAT_OK;
 }
 
-Status TcpClient::Send(const Header& header, const Bytes& body) {
+Status TcpClient::Send(Header& header, const Bytes& body) {
+    header.ContentSize = body.Size();
+
     Bytes headerBytes;
     header.GetBytes(headerBytes);
     size_t n = send(m_socketID, headerBytes.Ptr(), headerBytes.Size(), 0);
-    printf("write header: %d\n", n);
+    // printf("write header: %d\n", n);
     if(n < 0) return (Status)errno;
 
     n = send(m_socketID, body.Ptr(), body.Size(), 0);
-    printf("write body: %d\n", n);
+    // printf("write body: %d\n", n);
     if(n < 0) return (Status)errno;
 
     return STAT_OK;

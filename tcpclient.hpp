@@ -1,6 +1,8 @@
 #ifndef TCPCLIENT_HPP
 #define TCPCLIENT_HPP
 
+#include <thread>
+#include <mutex>
 #include <string>
 
 #include "common.h"
@@ -13,6 +15,10 @@ private:
     std::string m_host;
     std::string m_port;
 
+private:
+    std::thread m_recvThread;
+    std::mutex m_mutex;
+
 public:
     TcpClient();
     ~TcpClient();
@@ -23,7 +29,7 @@ public:
     Status Disconnect();
 
     Status Recv(Header& header, Bytes& bytes);
-    Status Send(const Header& header, const Bytes& bytes);
+    Status Send(Header& header, const Bytes& bytes);
 };
 
 #endif /* TCPCLIENT_HPP */

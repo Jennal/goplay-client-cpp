@@ -14,6 +14,8 @@ PackageIDType nextID() {
     return result;
 }
 
+Header::Header() {}
+
 Header::Header(PackageType t, EncodingType e, PackageSizeType size)
     : Type(t),
       Encoding(e),

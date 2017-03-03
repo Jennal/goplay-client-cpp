@@ -1,4 +1,6 @@
 project(goplay-client-cpp)
 cmake_minimum_required(VERSION 2.8)
+SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11 -pthread")
 aux_source_directory(. SRC_LIST)
+find_package (Threads)
 add_executable(${PROJECT_NAME} ${SRC_LIST})

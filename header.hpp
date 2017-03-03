@@ -15,6 +15,7 @@ public:
     PackageSizeType ContentSize;
 
 public:
+    Header();
     Header(Bytes& bytes);
     Header(PackageType t, EncodingType e, PackageSizeType size);
     Header(PackageType t, EncodingType e, PackageIDType id, PackageSizeType size);
