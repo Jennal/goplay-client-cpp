@@ -14,12 +14,14 @@ Bytes::Bytes()
     m_ptr = malloc(DEFAULT_SIZE);
 }
 
-Bytes::Bytes(void* ptr, size_t size)
-    : m_ptr(ptr),
-      m_pos(0),
+Bytes::Bytes(const void* ptr, size_t size)
+    : m_pos(0),
       m_size(size),
       m_capacity(size)
-{}
+{
+    m_ptr = malloc(size);
+    memcpy(m_ptr, ptr, size);
+}
 
 Bytes::~Bytes() {
     free(m_ptr);
@@ -28,11 +30,11 @@ Bytes::~Bytes() {
     m_capacity = 0;
 }
 
-void* Bytes::Ptr() {
+void* Bytes::Ptr() const {
     return m_ptr;
 }
 
-size_t Bytes::Size() {
+size_t Bytes::Size() const {
     return m_size;
 }
 
@@ -46,7 +48,7 @@ void Bytes::Write(unsigned char c) {
     m_size++;
 }
 
-void Bytes::Write(short s) {
+void Bytes::Write(unsigned short s) {
     Write((unsigned char)(s >> 8));
     Write((unsigned char)(s & 0x00FF));
 }
@@ -68,13 +70,13 @@ void Bytes::Write(const void* ptr, size_t size) {
 bool Bytes::Read(unsigned char &c) {
     if(m_pos > m_size) return false;
 
-    c = ((char*)m_ptr)[m_pos];
+    c = ((unsigned char*)m_ptr)[m_pos];
     m_pos++;
 
     return true;
 }
 
-bool Bytes::Read(short &s) {
+bool Bytes::Read(unsigned short &s) {
     if((m_pos + 2) > m_size) return false;
 
     unsigned char h = 0;

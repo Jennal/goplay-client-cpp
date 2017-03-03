@@ -12,18 +12,18 @@ private:
 
 public:
     Bytes();
-    Bytes(void* ptr, size_t size);
+    Bytes(const void* ptr, size_t size);
     ~Bytes();
 
-    void* Ptr();
-    size_t Size();
+    void* Ptr() const;
+    size_t Size() const;
 
     void Write(unsigned char c);
-    void Write(short s);
+    void Write(unsigned short s);
     void Write(const void* ptr, size_t size);
 
     bool Read(unsigned char &c);
-    bool Read(short &s);
+    bool Read(unsigned short &s);
     bool Read(void* ptr, size_t size);
 };
 

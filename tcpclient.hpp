@@ -22,7 +22,7 @@ public:
     Status Connect(const std::string& host, const std::string& port);
     Status Disconnect();
 
-    Status Recv(const Header& header, const Bytes& bytes);
+    Status Recv(Header& header, Bytes& bytes);
     Status Send(const Header& header, const Bytes& bytes);
 };
 

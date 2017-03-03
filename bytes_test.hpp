@@ -3,19 +3,7 @@
 
 #include <cstdio>
 #include "bytes.hpp"
-
-void bytes_print(Bytes& b) {
-    printf("Bytes(%p) => %p | %ld:\n", &b, b.Ptr(), b.Size());
-    size_t size = b.Size();
-    char* ptr = (char*)b.Ptr();
-    for(int i=0; i<size; ++i) {
-        printf("%02x ", ptr[i]);
-        if ((i+1)%16 == 0) {
-            printf("\n");
-        }
-    }
-    printf("\n");
-}
+#include "test_common.hpp"
 
 void bytes_test() {
     /* write byte */
@@ -41,11 +29,13 @@ void bytes_test() {
     /* write short */
     Bytes b3;
     bytes_print(b3);
-    printf("%04x => %d\n", (short)18, (short)18);
-    b3.Write((short)18);
+    unsigned short sval = 18;
+    printf("%04x => %d\n", sval, sval);
+    b3.Write(sval);
 
-    printf("%04x => %d\n", (short)(256*16*2+256), (short)(256*16*2+256));
-    b3.Write((short)(256*16*2+256));
+    sval = 256*16*2+256;
+    printf("%04x => %d\n", sval, sval);
+    b3.Write(sval);
     
     bytes_print(b3);
     printf("================\n");
@@ -73,7 +63,7 @@ void bytes_test() {
     /* read short */
     bytes_print(b3);
     for(int i=0; i<2; ++i){
-        short val = 0;
+        unsigned short val = 0;
         bool ok = b3.Read(val);
         printf("%d %d\n", ok, val);
     }

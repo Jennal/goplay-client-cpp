@@ -1,6 +1,8 @@
 #include "tcpclient.hpp"
 #include "tcp.h"
 #include <cstring>
+#include "bytes.hpp"
+#include "header.hpp"
 
 TcpClient::TcpClient()
     : m_socketID(-1),
@@ -42,17 +44,35 @@ Status TcpClient::Disconnect() {
     return STAT_OK;
 }
 
-Status TcpClient::Recv(const Header& header, const Bytes& bytes) {
-    char buf[Header::HeaderSize];
+Status TcpClient::Recv(Header& header, Bytes& bytes) {
+    unsigned char buf[Header::HeaderSize];
     memset(buf, 0, Header::HeaderSize);
     size_t n = recv(m_socketID, buf, Header::HeaderSize, 0);
     if(n < 0) return (Status)errno;
 
-    //TODO:
+    Bytes b(buf, Header::HeaderSize);
+    header.SetBytes(b);
+
+    unsigned char content[header.ContentSize];
+    memset(content, 0, header.ContentSize);
+    n = recv(m_socketID, content, header.ContentSize, 0);
+    if(n < 0) return (Status)errno;
+
+    bytes.Write(content, n);
 
     return STAT_OK;
 }
 
-Status TcpClient::Send(const Header& header, const Bytes& bytes) {
+Status TcpClient::Send(const Header& header, const Bytes& body) {
+    Bytes headerBytes;
+    header.GetBytes(headerBytes);
+    size_t n = send(m_socketID, headerBytes.Ptr(), headerBytes.Size(), 0);
+    printf("write header: %d\n", n);
+    if(n < 0) return (Status)errno;
 
+    n = send(m_socketID, body.Ptr(), body.Size(), 0);
+    printf("write body: %d\n", n);
+    if(n < 0) return (Status)errno;
+
+    return STAT_OK;
 }
