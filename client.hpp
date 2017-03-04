@@ -13,12 +13,18 @@
 class Client {
 typedef std::function<void(const std::string&, const Bytes&)> DataCallbackType;
 
-private:
+public:
     /* connect status callbacks */
     std::function<void()> cb_onConnected;
     std::function<void()> cb_onConnectRetry;
-    std::function<void()> cb_onConnectFailed;
+    std::function<void(Status)> cb_onConnectFailed;
     std::function<void()> cb_onDisconnected;
+
+private:
+    void onConnected();
+    void onConnectRetry();
+    void onConnectFailed(Status);
+    void onDisconnected();
 
 private:
     /* tcp request/push callbacks */
@@ -32,8 +38,8 @@ public:
     Client();
     ~Client();
 
-    Status Connect(const std::string& host, const std::string& port, int retry=5);
-    Status Disconnect();
+    void Connect(const std::string& host, const std::string& port, int retry=5);
+    void Disconnect();
 
     Status Request(const std::string& route, const Bytes& data, DataCallbackType);
     Status Notify(const std::string& route, const Bytes& data);

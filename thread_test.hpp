@@ -1,38 +1,23 @@
 #ifndef THREAD_TEST_HPP
 #define THREAD_TEST_HPP
 
-#include <cstdio>
 #include <iostream>
-#include <thread>
-#include <mutex>
-
-std::mutex mtx;
-int count = 0;
-
-void endless() {
-    int i=0;
-    while(i < 2) printf("i = %d\n", i++);
-}
-
-void inc() {
-    std::lock_guard<std::mutex> lck(mtx);
-
-    ++count;
-    std::cout << count << std::endl;
-}
+#include "thread.hpp"
 
 void thread_test() {
-    std::thread t(endless);
-    std::cout << t.joinable() << std::endl;
-    t.detach();
-    std::cout << t.joinable() << std::endl;
+    Thread::Daemon([](){
+        for(int i=0; i<10; ++i) {
+            std::cout << "in daemon func: " << i << std::endl;
+        }
+    });
 
-    std::thread threads[10];
     for(int i=0; i<10; ++i) {
-        threads[i] = std::thread(inc);
+        Thread::Do([i](){
+            std::cout << i << std::endl;
+        });
     }
 
-     for (auto& th : threads) th.join();
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
 #endif

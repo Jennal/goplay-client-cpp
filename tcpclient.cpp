@@ -98,11 +98,11 @@ Status TcpClient::Send(Header& header, const Bytes& body) {
     header.GetBytes(headerBytes);
     size_t n = send(m_socketID, headerBytes.Ptr(), headerBytes.Size(), 0);
     // printf("write header: %d\n", n);
-    if(n < 0) return (Status)errno;
+    if(n < headerBytes.Size()) return (Status)errno;
 
     n = send(m_socketID, body.Ptr(), body.Size(), 0);
     // printf("write body: %d\n", n);
-    if(n < 0) return (Status)errno;
+    if(n < body.Size()) return (Status)errno;
 
     return STAT_OK;
 }
