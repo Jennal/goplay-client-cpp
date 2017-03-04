@@ -5,10 +5,10 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <thread>
 #include <mutex>
 #include "common.h"
 #include "tcpclient.hpp"
+#include "thread.hpp"
 
 class Client {
 typedef std::function<void(const std::string&, const Bytes&)> DataCallbackType;
@@ -29,8 +29,8 @@ private:
 private:
     /* tcp request/push callbacks */
     TcpClient m_client;
-    std::thread m_recvThread;
-    std::mutex m_mutex;
+    std::mutex m_requestCBMutex;
+    std::mutex m_pushCBMutex;
     std::map<PackageIDType, DataCallbackType> m_requestCallbacks;
     std::map<std::string, std::vector<DataCallbackType> > m_pushCallbacks;
 

@@ -16,19 +16,21 @@ PackageIDType nextID() {
 
 Header::Header() {}
 
-Header::Header(PackageType t, EncodingType e, PackageSizeType size)
+Header::Header(PackageType t, EncodingType e, PackageSizeType size, const std::string& route)
     : Type(t),
       Encoding(e),
-      ContentSize(size)
+      ContentSize(size),
+      Route(route)
 {
     ID = nextID();
 }
 
-Header::Header(PackageType t, EncodingType e, PackageIDType id, PackageSizeType size)
+Header::Header(PackageType t, EncodingType e, PackageIDType id, PackageSizeType size, const std::string& route)
     : Type(t),
       Encoding(e),
       ID(id),
-      ContentSize(size)
+      ContentSize(size),
+      Route(route)
 {}
 
 Header::Header(Bytes& bytes) {
@@ -52,6 +54,11 @@ bool Header::SetBytes(Bytes& bytes) {
     if ( ! bytes.Read(sval)) return false;
     ContentSize = (PackageSizeType)sval;
 
+    if ( ! bytes.Read(val)) return false;
+    char route[val];
+    if( ! bytes.Read(route, val)) return false;
+    Route = std::string(route);
+
     return true;
 }
 
@@ -60,4 +67,6 @@ void Header::GetBytes(Bytes& bytes) const {
     bytes.Write((unsigned char)Encoding);
     bytes.Write((unsigned char)ID);
     bytes.Write((unsigned short)ContentSize);
+    bytes.Write((unsigned char)Route.size());
+    bytes.Write(Route.c_str(), Route.size());
 }

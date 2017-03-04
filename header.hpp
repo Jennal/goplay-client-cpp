@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "bytes.hpp"
+#include <string>
 
 class Header {
 public:
@@ -13,12 +14,13 @@ public:
     EncodingType Encoding;
     PackageIDType ID;
     PackageSizeType ContentSize;
+    std::string Route;
 
 public:
     Header();
     Header(Bytes& bytes);
-    Header(PackageType t, EncodingType e, PackageSizeType size);
-    Header(PackageType t, EncodingType e, PackageIDType id, PackageSizeType size);
+    Header(PackageType t, EncodingType e, PackageSizeType size, const std::string& route);
+    Header(PackageType t, EncodingType e, PackageIDType id, PackageSizeType size, const std::string& route);
     ~Header();
 
     bool SetBytes(Bytes& bytes);

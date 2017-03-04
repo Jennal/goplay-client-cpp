@@ -24,7 +24,7 @@ void tcpclient_test() {
         std::cin >> line;
         std::cout << "Read Line: " << line << std::endl;
         
-        Header header(PKG_REQUEST, ENCODING_JSON, line.size());
+        Header header(PKG_REQUEST, ENCODING_JSON, line.size(), "test.hi");
         Bytes body(line.c_str(), line.size());
         Status s = tcp.Send(header, body);
         if(s != STAT_OK) {

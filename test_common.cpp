@@ -20,6 +20,7 @@ void header_print(Header& header) {
     printf("Encoding: %d, ", header.Encoding);
     printf("ID: %d, ", header.ID);
     printf("ContentSize: %d", header.ContentSize);
+    printf("Route: %s", header.Route.c_str());
 
     printf("}\n");
 }

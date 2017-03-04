@@ -11,9 +11,9 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     // bytes_test();
-    // header_test();
+    header_test();
     // tcpclient_test();
-    thread_test();
+    // thread_test();
     // client_test();
 
     return 0;
