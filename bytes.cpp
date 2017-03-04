@@ -23,6 +23,10 @@ Bytes::Bytes(const void* ptr, size_t size)
     memcpy(m_ptr, ptr, size);
 }
 
+Bytes::Bytes(const std::string& str)
+    : Bytes(str.c_str(), str.size())
+{}
+
 Bytes::~Bytes() {
     free(m_ptr);
     m_ptr = NULL;

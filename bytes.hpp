@@ -2,6 +2,7 @@
 #define BYTES_HPP
 
 #include "common.h"
+#include <string>
 
 class Bytes {
 private:
@@ -13,6 +14,7 @@ private:
 public:
     Bytes();
     Bytes(const void* ptr, size_t size);
+    Bytes(const std::string& str);
     ~Bytes();
 
     void* Ptr() const;

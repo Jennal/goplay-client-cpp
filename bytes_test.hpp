@@ -68,6 +68,11 @@ void bytes_test() {
         printf("%d %d\n", ok, val);
     }
     printf("\n");
+    printf("================\n");
+
+    /* Test string */
+    Bytes b4("Hello");
+    bytes_print(b4);
 }
 
 #endif
