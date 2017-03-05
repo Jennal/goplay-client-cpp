@@ -37,6 +37,7 @@ private:
 public:
     static void Do(const ThreadFunc&);
     static void Daemon(const ThreadFunc&);
+    static void Sleep(unsigned int millisecond);
 
 friend class RemoveThread;
 };

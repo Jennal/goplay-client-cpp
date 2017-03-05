@@ -15,10 +15,6 @@ private:
     std::string m_host;
     std::string m_port;
 
-private:
-    std::thread m_recvThread;
-    std::mutex m_mutex;
-
 public:
     TcpClient();
     ~TcpClient();

@@ -119,3 +119,7 @@ void Thread::Daemon(const ThreadFunc& func) {
     s_daemonThreadMutex.unlock();
     // std::cout << "deamon map: " << id << " | " << th << std::endl;
 }
+
+void Thread::Sleep(unsigned int millisecond) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(millisecond));
+}

@@ -3,7 +3,17 @@
 #include <chrono>
 #include <iostream>
 
-Client::Client() {
+Client::Client(
+    std::function<void(Client&)> onConnected,
+    std::function<void(Client&)> onConnectRetry,
+    std::function<void(Client&, Status)> onConnectFailed,
+    std::function<void(Client&)> onDisconnected
+)
+    : cb_onConnected(onConnected),
+      cb_onConnectRetry(onConnectRetry),
+      cb_onConnectFailed(onConnectFailed),
+      cb_onDisconnected(onDisconnected)
+{
     
 }
 
@@ -12,19 +22,19 @@ Client::~Client() {
 }
 
 void Client::onConnected() {
-    if(cb_onConnected) cb_onConnected();
+    if(cb_onConnected) cb_onConnected(*this);
 }
 
 void Client::onConnectRetry() {
-    if(cb_onConnectRetry) cb_onConnectRetry();
+    if(cb_onConnectRetry) cb_onConnectRetry(*this);
 }
 
 void Client::onConnectFailed(Status s) {
-    if(cb_onConnectFailed) cb_onConnectFailed(s);
+    if(cb_onConnectFailed) cb_onConnectFailed(*this, s);
 }
 
 void Client::onDisconnected() {
-    if(cb_onDisconnected) cb_onDisconnected();
+    if(cb_onDisconnected) cb_onDisconnected(*this);
 }
 
 
@@ -45,28 +55,47 @@ void Client::Connect(const std::string& host, const std::string& port, int retry
                     auto s = m_client.Recv(h, b);
                     if(s == STAT_ERR_RECV_AGAIN) continue;
                     if (s != STAT_OK) {
-                        std::cout << "Err: " << s << std::endl;
+                        std::cout << "Err: " << status_str(s) << std::endl;
                         Disconnect();
                         break;
                     }
 
-                    switch(h.Type){
-                        case PKG_RESPONSE:
-                            break;
-                        case PKG_NOTIFY:
-                            //on push
-                            break;
-                        case PKG_NOTIFY_RESPONSE:
-                            break;
-                        case PKG_HEARTBEAT_RESPONSE:
-                            break;
-                        default: break;
-                    }
-                    //TODO:
                     std::cout << "Recv: " << std::endl;
                     std::cout << "\t => "; header_print(h);
                     std::cout << "\t => "; bytes_print(b);
                     std::cout << "===============================" << std::endl;
+
+                    if(h.Type == PKG_RESPONSE) {
+                        //on request callback
+                        m_requestCBMutex.lock();
+                        auto rcbIter = m_requestCallbacks.find(h.ID);
+                        m_requestCBMutex.unlock();
+                        if(rcbIter == m_requestCallbacks.end()) continue;
+
+                        auto func = rcbIter->second;
+                        m_requestCBMutex.lock();
+                        m_requestCallbacks.erase(rcbIter);
+                        m_requestCBMutex.unlock();
+                        func(h.Route, b);
+                    } else if(h.Type == PKG_NOTIFY) {
+                        //on push callback
+                        m_pushCBMutex.lock();
+                        auto pcbIter = m_pushCallbacks.find(h.Route);
+                        m_pushCBMutex.unlock();
+                        if(pcbIter == m_pushCallbacks.end()) continue;
+
+                        auto list = pcbIter->second;
+                        for(auto func : list) {
+                            func(h.Route, b);
+                        }
+                    } else if(h.Type == PKG_HEARTBEAT_RESPONSE) {
+                        //TODO:
+                    } else {
+                        // case PKG_REQUEST:                        
+                        // case PKG_NOTIFY_RESPONSE:
+                        // case PKG_HEARTBEAT:
+                        continue;
+                    }
                 }
             });
             onConnected();
@@ -80,6 +109,10 @@ void Client::Disconnect() {
     /* disconnect never failed */
     m_client.Disconnect();
     onDisconnected();
+}
+
+bool Client::IsConnected() {
+    return m_client.IsConnected();
 }
 
 Status Client::Request(const std::string& route, const Bytes& data, DataCallbackType cb) {
