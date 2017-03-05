@@ -50,28 +50,33 @@ Status TcpClient::Disconnect() {
 }
 
 Status TcpClient::Recv(Header& header, Bytes& bytes) {
-    //recv header
+    Bytes b;
+
+    //recv static header
     unsigned char buf[Header::HeaderSize];
     memset(buf, 0, Header::HeaderSize);
     int n = recv(m_socketID, buf, Header::HeaderSize, 0);
     if(n <= 0) { /*printf("Err-0\n");*/ return (Status)errno; }
 
-    Bytes b(buf, Header::HeaderSize);
+    b.Write(buf, Header::HeaderSize);
     // printf("Header(%d) => ", n); bytes_print(b);
-    header.SetBytes(b);
 
     //recv route
     unsigned char routeSize = 0;
     n = recv(m_socketID, &routeSize, 1, 0);
     // printf("routeSize => %d, %d\n", n, routeSize);
     if(n <= 0) { /*printf("Err-1\n");*/ return (Status)errno; }
+    b.Write(routeSize);
     /* heartbeat/heartbeat_response has no route */
     if(routeSize > 0) {
         char route[routeSize + 1];
         memset(route, 0, routeSize + 1);
         n = recv(m_socketID, route, routeSize, 0);
-        header.Route = route;
+        if(n <= 0) return (Status)errno;
+        b.Write(route, n);
     }
+
+    header.SetBytes(b);
 
     //recv content
     unsigned char content[header.ContentSize];

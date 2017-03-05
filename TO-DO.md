@@ -1,0 +1,24 @@
+## TO-DO List
+
+- [x] socket wrap
+  - [x] connect
+  - [x] disconnect
+  - [x] recv
+  - [x] send
+- [x] thread warp
+  - [x] do
+  - [x] daemon
+  - [x] sleep
+- [x] header
+  - [x] encode
+  - [x] decode
+- [x] binary
+  - [x] read
+  - [x] write
+- [ ] client
+  - [x] loop recv
+  - [ ] request callback
+  - [x] push callback
+  - [x] request
+  - [x] notify
+  - [x] addlistener

@@ -13,7 +13,7 @@ void tcpclient_test() {
     // return;
 
     TcpClient tcp;
-    Status s = tcp.Connect("localhost", "9999");
+    Status s = tcp.Connect("localhost", "9990");
     if(s != STAT_OK) {
         printf("Conenct Err: %d\n", s);
         return;
