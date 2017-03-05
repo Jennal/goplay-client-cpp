@@ -2,18 +2,22 @@
 #define THREAD_TEST_HPP
 
 #include <iostream>
+#include <cstdio>
+#include <thread>
 #include "thread.hpp"
 
 void thread_test() {
+    printf("main thread[%p]\n", std::this_thread::get_id());
+
     Thread::Daemon([](){
         for(int i=0; i<10; ++i) {
-            std::cout << "in daemon func: " << i << std::endl;
+            printf("in daemon func[%p]: %d\n", std::this_thread::get_id(), i);
         }
     });
 
     for(int i=0; i<10; ++i) {
         Thread::Do([i](){
-            std::cout << i << std::endl;
+            printf("in do func[%p]: %d\n", std::this_thread::get_id(), i);
         });
     }
 
