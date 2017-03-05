@@ -58,6 +58,8 @@ void Bytes::Write(unsigned short s) {
 }
 
 void Bytes::Write(const void* ptr, size_t size) {
+    if(size <= 0) return;
+
     size_t newCap = m_capacity;
     while(newCap < (m_size + size)) {
         newCap += newCap / 2;
@@ -96,6 +98,7 @@ bool Bytes::Read(unsigned short &s) {
 }
 
 bool Bytes::Read(void* ptr, size_t size) {
+    if(size <= 0) return true;
     if((m_pos + size) > m_size) return false;
 
     memcpy(ptr, (void*)((size_t)m_ptr+m_pos), size);

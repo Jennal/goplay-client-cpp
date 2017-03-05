@@ -1,4 +1,5 @@
 #include "header.hpp"
+#include <cstring>
 
 #define MAX_ID 255
 
@@ -55,9 +56,14 @@ bool Header::SetBytes(Bytes& bytes) {
     ContentSize = (PackageSizeType)sval;
 
     if ( ! bytes.Read(val)) return false;
-    char route[val];
-    if( ! bytes.Read(route, val)) return false;
-    Route = std::string(route);
+    if (val > 0) {
+        char route[val + 1];
+        memset(route, 0, val + 1);
+        if( ! bytes.Read(route, val)) return false;
+        Route = std::string(route);
+    } else {
+        Route = std::string();
+    }
 
     return true;
 }

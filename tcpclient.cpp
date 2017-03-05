@@ -65,12 +65,13 @@ Status TcpClient::Recv(Header& header, Bytes& bytes) {
     n = recv(m_socketID, &routeSize, 1, 0);
     // printf("routeSize => %d, %d\n", n, routeSize);
     if(n <= 0) { /*printf("Err-1\n");*/ return (Status)errno; }
-    if(routeSize <= 0) { /*printf("Err-2\n");*/ return STAT_ERR_RECV_FAULT; }
-
-    char route[routeSize + 1];
-    memset(route, 0, routeSize + 1);
-    n = recv(m_socketID, route, routeSize, 0);
-    header.Route = route;
+    /* heartbeat/heartbeat_response has no route */
+    if(routeSize > 0) {
+        char route[routeSize + 1];
+        memset(route, 0, routeSize + 1);
+        n = recv(m_socketID, route, routeSize, 0);
+        header.Route = route;
+    }
 
     //recv content
     unsigned char content[header.ContentSize];
