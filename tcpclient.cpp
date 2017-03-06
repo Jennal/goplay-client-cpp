@@ -79,12 +79,14 @@ Status TcpClient::Recv(Header& header, Bytes& bytes) {
     header.SetBytes(b);
 
     //recv content
-    unsigned char content[header.ContentSize];
-    memset(content, 0, header.ContentSize);
-    n = recv(m_socketID, content, header.ContentSize, 0);
-    if(n <= 0) { /*printf("Err-3\n");*/ return (Status)errno; }
+    if (header.ContentSize > 0) {
+        unsigned char content[header.ContentSize];
+        memset(content, 0, header.ContentSize);
+        n = recv(m_socketID, content, header.ContentSize, 0);
+        if(n <= 0) { /*printf("Err-3\n");*/ return (Status)errno; }
 
-    bytes.Write(content, n);
+        bytes.Write(content, n);
+    }
 
     return STAT_OK;
 }
@@ -101,9 +103,11 @@ Status TcpClient::Send(Header& header, const Bytes& body) {
     printf("write header: %d\n", n);
     if(n < headerBytes.Size()) return (Status)errno;
 
-    n = send(m_socketID, body.Ptr(), body.Size(), 0);
-    printf("write body: %d\n", n);
-    if(n < body.Size()) return (Status)errno;
+    if (header.ContentSize > 0) {
+        n = send(m_socketID, body.Ptr(), body.Size(), 0);
+        printf("write body: %d\n", n);
+        if(n < body.Size()) return (Status)errno;
+    }
 
     return STAT_OK;
 }
