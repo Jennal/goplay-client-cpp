@@ -37,7 +37,7 @@ typedef enum _status {
 	STAT_ERR_SEND_NOTCONN     = ENOTCONN,
 	STAT_ERR_SEND_NOTSOCK     = ENOTSOCK,
 	STAT_ERR_SEND_OPNOTSUPP   = EOPNOTSUPP,
-	STAT_ERR_SEND_PIPE        = EPIPE,
+	STAT_ERR_SEND_PIPE        = EPIPE
 } Status;
 
 typedef enum _package_type {
@@ -46,7 +46,12 @@ typedef enum _package_type {
 	PKG_REQUEST,
 	PKG_RESPONSE,
 	PKG_HEARTBEAT,
-	PKG_HEARTBEAT_RESPONSE
+	PKG_HEARTBEAT_RESPONSE,
+
+	PKG_RPC_NOTIFY,
+	PKG_RPC_NOTIFY_RESPONSE,
+	PKG_RPC_REQUEST,
+	PKG_RPC_RESPONSE
 } PackageType;
 
 typedef enum _encoding_type {

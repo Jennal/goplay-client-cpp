@@ -13,6 +13,7 @@ private:
 
 public:
     Bytes();
+    Bytes(const Bytes& b);
     Bytes(const void* ptr, size_t size);
     Bytes(const std::string& str);
     ~Bytes();

@@ -14,6 +14,10 @@ Bytes::Bytes()
     m_ptr = malloc(DEFAULT_SIZE);
 }
 
+Bytes::Bytes(const Bytes& b)
+    : Bytes(b.Ptr(), b.Size())
+{}
+
 Bytes::Bytes(const void* ptr, size_t size)
     : m_pos(0),
       m_size(size),

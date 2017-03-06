@@ -6,6 +6,7 @@
 #include <iostream>
 #include <cstdio>
 #include <thread>
+#include <cstring>
 
 void client_test() {
     Client cli([=](Client& cli){
@@ -21,9 +22,18 @@ void client_test() {
         printf("Disconnected!\n");
     });
     cli.AddListener("test.push", [](const std::string& route, const Bytes& data){
-        printf("OnPush: %s => %s\n", route.c_str(), data.Ptr());
+        Bytes b(data);
+        b.Write((unsigned char)0);
+        printf("OnPush-0: %s => %s\n", route.c_str(), b.Ptr());
     });
-    cli.Connect("localhost", "9999");
+
+    cli.AddListener("test.push", [](const std::string& route, const Bytes& data){
+        Bytes b(data);
+        b.Write((unsigned char)0);
+        printf("OnPush-1: %s => %s\n", route.c_str(), b.Ptr());
+    });
+
+    cli.Connect("10.0.75.1", "9999");
 
     while(true) {
         if( ! cli.IsConnected()) continue;
@@ -33,6 +43,11 @@ void client_test() {
 
         Bytes b(line);
         cli.Notify("test.push", b);
+        cli.Request("test.request", b, [=](const std::string& route, const Bytes& data){
+            Bytes b(data);
+            b.Write((unsigned char)0);
+            printf("Request callback: %s => %s\n", route.c_str(), b.Ptr());
+        });
     }
 }
 
