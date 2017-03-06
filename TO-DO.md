@@ -15,10 +15,15 @@
 - [x] binary
   - [x] read
   - [x] write
-- [ ] client
+- [x] client
   - [x] loop recv
-  - [ ] request callback
+  - [x] request callback
   - [x] push callback
   - [x] request
   - [x] notify
   - [x] addlistener
+- [ ] heartbeat
+  - [ ] send heartbeat
+  - [ ] recv heartbeat response
+  - [ ] update ping time
+  - [ ] disconnect while time out
