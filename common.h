@@ -55,6 +55,7 @@ typedef enum _package_type {
 } PackageType;
 
 typedef enum _encoding_type {
+	ENCODING_NONE,
     ENCODING_GOB,
 	ENCODING_JSON,
 	ENCODING_BSON,
