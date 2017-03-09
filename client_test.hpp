@@ -41,9 +41,11 @@ void client_test() {
         std::string line;
         std::cin >> line;
 
-        Bytes b(line);
-        cli.Notify("test.push", b);
-        cli.Request("test.request", b, [=](const std::string& route, const Bytes& data){
+        Bytes b("\""+line+"\"");
+        cli.Notify("test.handler.test", b);
+
+        Bytes n("1");
+        cli.Request("test.handler.add", n, [=](const std::string& route, const Bytes& data){
             Bytes b(data);
             b.Write((unsigned char)0);
             printf("Request callback: %s => %s\n", route.c_str(), b.Ptr());
