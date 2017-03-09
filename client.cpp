@@ -91,7 +91,7 @@ void Client::Connect(const std::string& host, const std::string& port, int retry
                     } else if(h.Type == PKG_HEARTBEAT) {
                         //send response
                         h.Type = PKG_HEARTBEAT_RESPONSE;
-                        m_client.Send(h, b) /* b should be empty */
+                        m_client.Send(h, b); /* b should be empty */
                     } else if(h.Type == PKG_HEARTBEAT_RESPONSE) {
                         //TODO:
                     } else {
