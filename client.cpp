@@ -88,12 +88,15 @@ void Client::Connect(const std::string& host, const std::string& port, int retry
                         for(auto func : list) {
                             func(h.Route, b);
                         }
+                    } else if(h.Type == PKG_HEARTBEAT) {
+                        //send response
+                        h.Type = PKG_HEARTBEAT_RESPONSE;
+                        m_client.Send(h, b) /* b should be empty */
                     } else if(h.Type == PKG_HEARTBEAT_RESPONSE) {
                         //TODO:
                     } else {
-                        // case PKG_REQUEST:                        
+                        // case PKG_REQUEST:
                         // case PKG_NOTIFY_RESPONSE:
-                        // case PKG_HEARTBEAT:
                         continue;
                     }
                 }
@@ -108,6 +111,10 @@ void Client::Connect(const std::string& host, const std::string& port, int retry
 void Client::Disconnect() {
     /* disconnect never failed */
     m_client.Disconnect();
+    //TODO:fail all request
+    m_requestCBMutex.lock();
+    m_requestCallbacks.clear();
+    m_requestCBMutex.unlock();
     onDisconnected();
 }
 
