@@ -96,7 +96,6 @@ void Client::Connect(const std::string& host, const std::string& port, int retry
                         //TODO:
                     } else {
                         // case PKG_REQUEST:
-                        // case PKG_NOTIFY_RESPONSE:
                         continue;
                     }
                 }
