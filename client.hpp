@@ -12,6 +12,7 @@
 
 class Client {
 typedef std::function<void(const std::string&, const Bytes&)> DataCallbackType;
+typedef std::pair<DataCallbackType, DataCallbackType> RequestCallbackPair;
 
 private:
     /* connect status callbacks */
@@ -31,7 +32,7 @@ private:
     TcpClient m_client;
     std::mutex m_requestCBMutex;
     std::mutex m_pushCBMutex;
-    std::map<PackageIDType, DataCallbackType> m_requestCallbacks;
+    std::map<PackageIDType, RequestCallbackPair> m_requestCallbacks;
     std::map<std::string, std::vector<DataCallbackType> > m_pushCallbacks;
 
 public:
@@ -48,7 +49,7 @@ public:
 
     bool IsConnected();
 
-    Status Request(const std::string& route, const Bytes& data, DataCallbackType);
+    Status Request(const std::string& route, const Bytes& data, DataCallbackType succCB, DataCallbackType failCB);
     Status Notify(const std::string& route, const Bytes& data);
 
     Status AddListener(const std::string& route, DataCallbackType);

@@ -5,7 +5,7 @@
 #include "test_common.hpp"
 
 void header_test() {
-    Header header4((PackageType)128, (EncodingType)255, (PackageIDType)256, (PackageSizeType)32768, "gate.getname");
+    Header header4((PackageType)128, (EncodingType)255, (PackageIDType)256, STAT_OK, (PackageSizeType)32768, "gate.getname");
     header_print(header4);
 
     Bytes b4;

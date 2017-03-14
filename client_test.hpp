@@ -24,13 +24,13 @@ void client_test() {
     cli.AddListener("test.push", [](const std::string& route, const Bytes& data){
         Bytes b(data);
         b.Write((unsigned char)0);
-        printf("OnPush-0: %s => %s\n", route.c_str(), b.Ptr());
+        printf("OnPush-0: %s => %s\n", route.c_str(), (char*)b.Ptr());
     });
 
     cli.AddListener("test.push", [](const std::string& route, const Bytes& data){
         Bytes b(data);
         b.Write((unsigned char)0);
-        printf("OnPush-1: %s => %s\n", route.c_str(), b.Ptr());
+        printf("OnPush-1: %s => %s\n", route.c_str(), (char*)b.Ptr());
     });
 
     cli.Connect("10.0.75.1", "9999");
@@ -48,7 +48,11 @@ void client_test() {
         cli.Request("test.handler.add", n, [=](const std::string& route, const Bytes& data){
             Bytes b(data);
             b.Write((unsigned char)0);
-            printf("Request callback: %s => %s\n", route.c_str(), b.Ptr());
+            printf("[Success] Request callback: %s => %s\n", route.c_str(), (char*)b.Ptr());
+        }, [=](const std::string& route, const Bytes& data){
+            Bytes b(data);
+            b.Write((unsigned char)0);
+            printf("[Failed] Request callback: %s => %s\n", route.c_str(), (char*)b.Ptr());
         });
     }
 }

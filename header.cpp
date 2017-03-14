@@ -3,7 +3,7 @@
 
 #define MAX_ID 255
 
-const size_t Header::HeaderSize = 5;
+const size_t Header::HeaderSize = 6;
 static PackageIDType s_id = 0;
 
 PackageIDType nextID() {
@@ -20,16 +20,18 @@ Header::Header() {}
 Header::Header(PackageType t, EncodingType e, PackageSizeType size, const std::string& route)
     : Type(t),
       Encoding(e),
+      Stat(STAT_OK),
       ContentSize(size),
       Route(route)
 {
     ID = nextID();
 }
 
-Header::Header(PackageType t, EncodingType e, PackageIDType id, PackageSizeType size, const std::string& route)
+Header::Header(PackageType t, EncodingType e, PackageIDType id, Status status, PackageSizeType size, const std::string& route)
     : Type(t),
       Encoding(e),
       ID(id),
+      Stat(status),
       ContentSize(size),
       Route(route)
 {}
@@ -50,6 +52,9 @@ bool Header::SetBytes(Bytes& bytes) {
     
     if ( ! bytes.Read(val)) return false;
     ID = (PackageIDType)val;
+
+    if ( ! bytes.Read(val)) return false;
+    Stat = (Status)val;
 
     unsigned short sval = 0;
     if ( ! bytes.Read(sval)) return false;
@@ -72,6 +77,7 @@ void Header::GetBytes(Bytes& bytes) const {
     bytes.Write((unsigned char)Type);
     bytes.Write((unsigned char)Encoding);
     bytes.Write((unsigned char)ID);
+    bytes.Write((unsigned char)Stat);
     bytes.Write((unsigned short)ContentSize);
     bytes.Write((unsigned char)Route.size());
     bytes.Write(Route.c_str(), Route.size());

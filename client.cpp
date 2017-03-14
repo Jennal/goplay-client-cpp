@@ -13,9 +13,7 @@ Client::Client(
       cb_onConnectRetry(onConnectRetry),
       cb_onConnectFailed(onConnectFailed),
       cb_onDisconnected(onDisconnected)
-{
-    
-}
+{}
 
 Client::~Client() {
 
@@ -72,11 +70,18 @@ void Client::Connect(const std::string& host, const std::string& port, int retry
                         m_requestCBMutex.unlock();
                         if(rcbIter == m_requestCallbacks.end()) continue;
 
-                        auto func = rcbIter->second;
+                        auto funcPair = rcbIter->second;
                         m_requestCBMutex.lock();
                         m_requestCallbacks.erase(rcbIter);
                         m_requestCBMutex.unlock();
-                        func(h.Route, b);
+                        if(h.Stat == STAT_OK) {
+                            //success callback
+                            funcPair.first(h.Route, b);
+                        } else {
+                            //failed callback
+                            funcPair.second(h.Route, b);
+                        }
+                        
                     } else if(h.Type == PKG_NOTIFY) {
                         //on push callback
                         m_pushCBMutex.lock();
@@ -121,11 +126,11 @@ bool Client::IsConnected() {
     return m_client.IsConnected();
 }
 
-Status Client::Request(const std::string& route, const Bytes& data, DataCallbackType cb) {
+Status Client::Request(const std::string& route, const Bytes& data, DataCallbackType succCB, DataCallbackType failCB) {
     Header h(PKG_REQUEST, ENCODING_JSON, data.Size(), route);
 
     m_requestCBMutex.lock();
-    m_requestCallbacks[h.ID] = cb;
+    m_requestCallbacks[h.ID] = RequestCallbackPair(succCB, failCB);
     m_requestCBMutex.unlock();
 
     return m_client.Send(h, data);
