@@ -13,7 +13,7 @@ void client_test() {
         printf("Connected!\n");
 
         Bytes b("Hello");
-        cli.Notify("test.push", b);
+        // cli.Notify("test.handler.test", b);
     }, [=](Client& cli){
         printf("onConnectRetry!\n");
     }, [=](Client& cli, Status s){

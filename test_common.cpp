@@ -11,15 +11,25 @@ void bytes_print(const Bytes& b) {
             printf("\n");
         }
     }
-    printf("\n");
+
+    if (size > 0) {
+        printf("\n---------------------\n");
+        for(int i=0; i<size; ++i) {
+            printf("%c", ptr[i]);
+        }
+        printf("\n");
+    } else {
+        printf("\n");
+    }
 }
 
 void header_print(const Header& header) {
-    printf("Header(%p) => {Type: %d, Encoding: %d, ID: %d, ContentSize: %d, Route: %s}\n", 
+    printf("Header(%p) => {Type: %d, Encoding: %d, ID: %d, Status: %s, ContentSize: %d, Route: %s}\n", 
         &header,
         header.Type,
         header.Encoding,
         header.ID,
+        status_str(header.Stat).c_str(),
         header.ContentSize,
         header.Route.c_str()
     );
@@ -57,6 +67,10 @@ std::string status_str(Status s) {
         { STAT_ERR_SEND_OPNOTSUPP, "STAT_ERR_SEND_OPNOTSUPP" },
         { STAT_ERR_SEND_PIPE, "STAT_ERR_SEND_PIPE" },
     };
+
+    if (m.find(s) == m.end()) {
+        return std::string("STAT_UNKNOWN");
+    }
 
     return m[s];
 }
