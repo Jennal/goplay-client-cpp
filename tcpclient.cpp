@@ -17,7 +17,7 @@ TcpClient::~TcpClient() {
     Disconnect();
 }
 
-bool TcpClient::IsConnected() {
+bool TcpClient::IsConnected() const {
     return m_socketID >= 0;
 }
 

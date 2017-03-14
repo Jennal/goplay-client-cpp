@@ -19,7 +19,7 @@ public:
     TcpClient();
     ~TcpClient();
 
-    bool IsConnected();
+    bool IsConnected() const;
 
     Status Connect(const std::string& host, const std::string& port);
     Status Disconnect();

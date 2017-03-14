@@ -12,7 +12,12 @@ Client::Client(
     : cb_onConnected(onConnected),
       cb_onConnectRetry(onConnectRetry),
       cb_onConnectFailed(onConnectFailed),
-      cb_onDisconnected(onDisconnected)
+      cb_onDisconnected(onDisconnected),
+      m_heartbeatProcessor(
+          std::chrono::milliseconds(HEARTBEAT_TIMEOUT), 
+          std::chrono::milliseconds(HEARTBEAT_INTERVAL), 
+          HEARTBEAT_MAX_TIMEOUT
+      )
 {}
 
 Client::~Client() {
@@ -98,13 +103,16 @@ void Client::Connect(const std::string& host, const std::string& port, int retry
                         h.Type = PKG_HEARTBEAT_RESPONSE;
                         m_client.Send(h, b); /* b should be empty */
                     } else if(h.Type == PKG_HEARTBEAT_RESPONSE) {
-                        //TODO:
+                        m_heartbeatProcessor.Recv(h);
                     } else {
                         // case PKG_REQUEST:
                         continue;
                     }
                 }
             });
+
+            m_heartbeatProcessor.Start(*this);
+
             onConnected();
         } else {
             onConnectFailed(s);
@@ -113,6 +121,7 @@ void Client::Connect(const std::string& host, const std::string& port, int retry
 }
 
 void Client::Disconnect() {
+    m_heartbeatProcessor.Stop();
     /* disconnect never failed */
     m_client.Disconnect();
     //TODO:fail all request
@@ -122,8 +131,12 @@ void Client::Disconnect() {
     onDisconnected();
 }
 
-bool Client::IsConnected() {
+bool Client::IsConnected() const {
     return m_client.IsConnected();
+}
+
+TcpClient& Client::GetTcpClient() {
+    return m_client;
 }
 
 Status Client::Request(const std::string& route, const Bytes& data, DataCallbackType succCB, DataCallbackType failCB) {

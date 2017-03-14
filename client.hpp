@@ -9,6 +9,7 @@
 #include "common.h"
 #include "tcpclient.hpp"
 #include "thread.hpp"
+#include "heartbeat_processor.hpp"
 
 class Client {
 typedef std::function<void(const std::string&, const Bytes&)> DataCallbackType;
@@ -35,6 +36,8 @@ private:
     std::map<PackageIDType, RequestCallbackPair> m_requestCallbacks;
     std::map<std::string, std::vector<DataCallbackType> > m_pushCallbacks;
 
+    HeartbeatProcessor m_heartbeatProcessor;
+
 public:
     Client(
         std::function<void(Client&)> onConnected,
@@ -47,7 +50,8 @@ public:
     void Connect(const std::string& host, const std::string& port, int retry=5);
     void Disconnect();
 
-    bool IsConnected();
+    bool IsConnected() const;
+    TcpClient& GetTcpClient();
 
     Status Request(const std::string& route, const Bytes& data, DataCallbackType succCB, DataCallbackType failCB);
     Status Notify(const std::string& route, const Bytes& data);
