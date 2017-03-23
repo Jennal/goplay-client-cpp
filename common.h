@@ -59,23 +59,25 @@ typedef enum _status {
 } Status;
 
 typedef enum _package_type {
-    PKG_NOTIFY,
-	PKG_REQUEST,
-	PKG_RESPONSE,
-	PKG_HEARTBEAT,
-	PKG_HEARTBEAT_RESPONSE,
+    PKG_NOTIFY             = 0,
+	PKG_REQUEST            = 1,
+	PKG_RESPONSE           = 2,
+	PKG_PUSH               = 3,
+	PKG_HEARTBEAT          = 4,
+	PKG_HEARTBEAT_RESPONSE = 5,
 
-	PKG_RPC_NOTIFY,
-	PKG_RPC_REQUEST,
-	PKG_RPC_RESPONSE
+	PKG_RPC_NOTIFY   = 6,
+	PKG_RPC_REQUEST  = 7,
+	PKG_RPC_RESPONSE = 8,
+	PKG_RPC_PUSH     = 9
 } PackageType;
 
 typedef enum _encoding_type {
-	ENCODING_NONE,
-    ENCODING_GOB,
-	ENCODING_JSON,
-	ENCODING_BSON,
-	ENCODING_PROTOBUF
+	ENCODING_NONE     = 0,
+    ENCODING_GOB      = 1,
+	ENCODING_JSON     = 2,
+	ENCODING_BSON     = 3,
+	ENCODING_PROTOBUF = 4
 } EncodingType;
 
 typedef unsigned char PackageIDType;

@@ -99,7 +99,7 @@ void Client::Connect(const std::string& host, const std::string& port, int retry
                             funcPair.second(h.Route, b);
                         }
                         
-                    } else if(h.Type == PKG_NOTIFY) {
+                    } else if(h.Type == PKG_PUSH) {
                         //on push callback
                         m_pushCBMutex.lock();
                         auto pcbIter = m_pushCallbacks.find(h.Route);
