@@ -100,26 +100,36 @@ Status TcpClient::Recv(Header& header, Bytes& bytes) {
         bytes.Write(content, n);
     }
 
+    std::cout << "<<<<<<<<< Recv: " << std::endl;
+    std::cout << "\t => "; header_print(header);
+    std::cout << "\t => "; bytes_print(bytes);
+    std::cout << "===============================" << std::endl;
+
     return STAT_OK;
 }
 
 Status TcpClient::Send(Header& header, const Bytes& body) {
     header.ContentSize = body.Size();
 
-    header_print(header);
-    bytes_print(body);
+    // header_print(header);
+    // bytes_print(body);
 
     Bytes headerBytes;
     header.GetBytes(headerBytes);
     int n = send(m_socketID, headerBytes.Ptr(), headerBytes.Size(), 0);
-    printf("write header: %d\n", n);
+    // printf("write header: %d\n", n);
     if(n < headerBytes.Size()) return (Status)errno;
 
     if (header.ContentSize > 0) {
         n = send(m_socketID, body.Ptr(), body.Size(), 0);
-        printf("write body: %d\n", n);
+        // printf("write body: %d\n", n);
         if(n < body.Size()) return (Status)errno;
     }
+
+    std::cout << ">>>>>>>>> Write: " << std::endl;
+    std::cout << "\t => "; header_print(header);
+    std::cout << "\t => "; bytes_print(body);
+    std::cout << "===============================" << std::endl;
 
     return STAT_OK;
 }

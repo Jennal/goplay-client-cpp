@@ -22,13 +22,15 @@
 class Client;
 
 class HeartbeatProcessor {
+public:
+    typedef std::map<PackageIDType, std::chrono::steady_clock::time_point> TimePointMap;
 private:
     std::chrono::milliseconds m_timeOut;
     std::chrono::milliseconds m_interval;
     int m_maxTimeout;
     int m_timeOutCount;
 
-    std::map<PackageIDType, std::chrono::steady_clock::time_point> m_timePoints;
+    TimePointMap m_timePoints;
     std::mutex m_timePointsMutex;
 
     bool m_recvStopSignal;

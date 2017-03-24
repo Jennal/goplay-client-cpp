@@ -75,11 +75,6 @@ void Client::Connect(const std::string& host, const std::string& port, int retry
                         break;
                     }
 
-                    std::cout << "Recv: " << std::endl;
-                    std::cout << "\t => "; header_print(h);
-                    std::cout << "\t => "; bytes_print(b);
-                    std::cout << "===============================" << std::endl;
-
                     if(h.Type == PKG_RESPONSE) {
                         //on request callback
                         m_requestCBMutex.lock();
