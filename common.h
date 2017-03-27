@@ -66,10 +66,12 @@ typedef enum _package_type {
 	PKG_HEARTBEAT          = 4,
 	PKG_HEARTBEAT_RESPONSE = 5,
 
-	PKG_RPC_NOTIFY   = 6,
-	PKG_RPC_REQUEST  = 7,
-	PKG_RPC_RESPONSE = 8,
-	PKG_RPC_PUSH     = 9
+	PKG_RPC = 0x10,
+
+	PKG_RPC_NOTIFY   = PKG_NOTIFY   | PKG_RPC,
+	PKG_RPC_REQUEST  = PKG_REQUEST  | PKG_RPC,
+	PKG_RPC_RESPONSE = PKG_RESPONSE | PKG_RPC,
+	PKG_RPC_PUSH     = PKG_PUSH     | PKG_RPC
 } PackageType;
 
 typedef enum _encoding_type {
