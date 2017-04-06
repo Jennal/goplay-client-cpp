@@ -135,7 +135,7 @@ Status TcpClient::Send(Header& header, const Bytes& body) {
     if (header.ContentSize > 0) {
         int sentSize = 0;
         while (sentSize < body.Size()) {
-            n = send(m_socketID, body.Ptr() + sentSize, body.Size() - sentSize, 0);
+            n = send(m_socketID, (void*)((size_t)body.Ptr()+sentSize), body.Size()-sentSize, 0);
             // printf("write body: %d\n", n);
             if(n < body.Size()) return (Status)errno;
 
