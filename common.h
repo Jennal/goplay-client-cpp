@@ -16,7 +16,7 @@
 #include <stddef.h>
 #include <errno.h>
 
-#define SOCKET_TIMEOUT_SEC 2
+#define SOCKET_TIMEOUT_SEC 10
 
 #define HEARTBEAT_TIMEOUT (3000)
 #define HEARTBEAT_INTERVAL (15000)

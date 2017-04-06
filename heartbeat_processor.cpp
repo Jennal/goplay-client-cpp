@@ -121,9 +121,9 @@ void HeartbeatProcessor::Recv(const Header& header) {
         return;
     }
 
-    std::cout << "<<<<<<<<< Recv HeartBeat Response: " << std::endl;
-    std::cout << "\t => "; header_print(header);
-    std::cout << "===============================" << std::endl;
+    // std::cout << "<<<<<<<<< Recv HeartBeat Response: " << std::endl;
+    // std::cout << "\t => "; header_print(header);
+    // std::cout << "===============================" << std::endl;
 
     m_timePoints.erase(iter);
     m_timeOutCount = 0;

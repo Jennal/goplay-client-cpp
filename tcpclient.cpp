@@ -94,16 +94,28 @@ Status TcpClient::Recv(Header& header, Bytes& bytes) {
     if (header.ContentSize > 0) {
         unsigned char content[header.ContentSize];
         memset(content, 0, header.ContentSize);
-        n = recv(m_socketID, content, header.ContentSize, 0);
-        if(n <= 0) { /*printf("Err-3\n");*/ return (Status)errno; }
+        int recvedSize = 0;
+        while (recvedSize < header.ContentSize) {
+            // std::cout << "****** Before Recv: " << std::endl;
+            // std::cout << "\trecvedSize=" << recvedSize << ", n=" << n << std::endl;
+            // std::cout << "===============================" << std::endl;
+            n = recv(m_socketID, content+recvedSize, header.ContentSize-recvedSize, 0);
+            if(n <= 0) { /*printf("Err-3\n");*/ return (Status)errno; }
+            recvedSize += n;
+            // std::cout << "****** After Recv: " << std::endl;
+            // std::cout << "\trecvedSize=" << recvedSize << ", n=" << n << std::endl;
+            // std::cout << "===============================" << std::endl;
+        }
 
-        bytes.Write(content, n);
+        bytes.Write(content, recvedSize);
     }
 
-    std::cout << "<<<<<<<<< Recv: " << std::endl;
-    std::cout << "\t => "; header_print(header);
-    std::cout << "\t => "; bytes_print(bytes);
-    std::cout << "===============================" << std::endl;
+    if(header.Type != PKG_HEARTBEAT && header.Type != PKG_HEARTBEAT_RESPONSE) {
+        std::cout << "<<<<<<<<< Recv: " << std::endl;
+        std::cout << "\t => "; header_print(header);
+        std::cout << "\t => "; bytes_print(bytes);
+        std::cout << "===============================" << std::endl;
+    }
 
     return STAT_OK;
 }
@@ -121,15 +133,22 @@ Status TcpClient::Send(Header& header, const Bytes& body) {
     if(n < headerBytes.Size()) return (Status)errno;
 
     if (header.ContentSize > 0) {
-        n = send(m_socketID, body.Ptr(), body.Size(), 0);
-        // printf("write body: %d\n", n);
-        if(n < body.Size()) return (Status)errno;
+        int sentSize = 0;
+        while (sentSize < body.Size()) {
+            n = send(m_socketID, body.Ptr() + sentSize, body.Size() - sentSize, 0);
+            // printf("write body: %d\n", n);
+            if(n < body.Size()) return (Status)errno;
+
+            sentSize += n;
+        }
     }
 
-    std::cout << ">>>>>>>>> Write: " << std::endl;
-    std::cout << "\t => "; header_print(header);
-    std::cout << "\t => "; bytes_print(body);
-    std::cout << "===============================" << std::endl;
+    if(header.Type != PKG_HEARTBEAT && header.Type != PKG_HEARTBEAT_RESPONSE) {
+        std::cout << ">>>>>>>>> Write: " << std::endl;
+        std::cout << "\t => "; header_print(header);
+        std::cout << "\t => "; bytes_print(body);
+        std::cout << "===============================" << std::endl;
+    }
 
     return STAT_OK;
 }
